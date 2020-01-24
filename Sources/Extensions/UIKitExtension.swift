@@ -68,13 +68,13 @@ public extension UITableView {
             return reloadData()
         }
 
-        for changeset in stagedChangeset {
-            if let interrupt = interrupt, interrupt(changeset), let data = stagedChangeset.last?.data {
-                setData(data)
-                return reloadData()
-            }
+        _performBatchUpdates {
+            for changeset in stagedChangeset {
+                if let interrupt = interrupt, interrupt(changeset), let data = stagedChangeset.last?.data {
+                    setData(data)
+                    return reloadData()
+                }
 
-            _performBatchUpdates {
                 setData(changeset.data)
 
                 if !changeset.sectionDeleted.isEmpty {
@@ -147,13 +147,13 @@ public extension UICollectionView {
             return reloadData()
         }
 
-        for changeset in stagedChangeset {
-            if let interrupt = interrupt, interrupt(changeset), let data = stagedChangeset.last?.data {
-                setData(data)
-                return reloadData()
-            }
+        performBatchUpdates({
+            for changeset in stagedChangeset {
+                if let interrupt = interrupt, interrupt(changeset), let data = stagedChangeset.last?.data {
+                    setData(data)
+                    return reloadData()
+                }
 
-            performBatchUpdates({
                 setData(changeset.data)
 
                 if !changeset.sectionDeleted.isEmpty {
@@ -187,8 +187,8 @@ public extension UICollectionView {
                 for (source, target) in changeset.elementMoved {
                     moveItem(at: IndexPath(item: source.element, section: source.section), to: IndexPath(item: target.element, section: target.section))
                 }
-            })
-        }
+            }
+        })
     }
 }
 #endif
